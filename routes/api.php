@@ -18,6 +18,17 @@ use Illuminate\Support\Facades\Route;
     Route::get('/students','students@index');
     Route::post('/students/add','students@add');
     Route::post('/students/edit', 'students@edit');
-    Route::get('/students/{id}', 'students@detail');
+    Route::get('/students/detail/{id}', 'students@detail');
     Route::get('/students/delete', 'students@delete');
 // });
+
+    Route::post('/image','ImageController@index');
+    Route::get('/image/a','ImageController@create');
+
+    Route::get('/class','ClassController@index');
+    Route::post('/class/add','ClassController@add');
+    Route::post('/class/edit', 'ClassController@edit');
+    Route::get('/class/detail/{id}', 'ClassController@detail');
+    Route::get('/class/delete', 'ClassController@delete');
+
+

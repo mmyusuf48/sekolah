@@ -3,9 +3,12 @@
 namespace App\Http\Controllers;
 
 use App\studentsModel;
+use App\ClassModel;
 use App\Helpers\Converter;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -17,10 +20,26 @@ class students extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
-        $students = studentsModel::get();
-        return Converter::ResponseApi(200, 'Data Student', $students);
+        $students = studentsModel::join('classes','classes.id_class', '=', 'students.id_class')
+        ->join('images','images.id_image','=','students.id_image')
+        ->get();
+
+        $result = array();
+
+        foreach($students as $index => $row) {
+          $result[$index] = (object)array();
+          $result[$index]->id = $row->id;
+          $result[$index]->nama_siswa = $row->nama_siswa;
+          $result[$index]->class_room = array('id' => $row->id_class, 'code_class' => $row->code_class);
+          $result[$index]->image_url = url('/assets/images/students').'/'.$row->image;
+          $result[$index]->no_tlp = $row->no_tlp;
+          $result[$index]->email = $row->email;
+          $result[$index]->alamat = $row->alamat;
+        }
+        
+        return Converter::ResponseApi(200, 'Data Student', $result);
     }
 
     /**
@@ -32,22 +51,28 @@ class students extends Controller
     {
       $validator = Validator::make($request->all(), [
         'nama_siswa' => 'required',
+        'id_class' => 'required',
         'no_tlp' => 'required|numeric',
-        'alamat' => 'required',
-        // 'email' => 'required|email|unique:users',
+        'email' => 'required|email',
+        'alamat' => 'required'
+        // 'image' => 'required|image:jpeg,jpg,png,gif,svg|max:2048',
         // 'password' => 'required|min:6|required_with:password_confirmation|same:password_confirmation',
         // 'password_confirmation' => 'required|min:6',
         // 'id_role' => 'required',
         // 'created_at' => 'required',
       ]);
 
+      
       if ($validator->fails()) {
         return Converter::ResponseApi(Response::HTTP_BAD_REQUEST, $validator->messages()->first(), (object)array());
       }
       try {
         $query = studentsModel::create([
           'nama_siswa' => $request->nama_siswa,
+          'id_class' => $request->id_class,
           'no_tlp' => $request->no_tlp,
+          'email' => $request->email,
+          // 'image' => $image,
           'alamat' => $request->alamat
         ]);
         return Converter::ResponseApi(200, 'Success Add Data Students', (object)array());
@@ -104,6 +129,7 @@ class students extends Controller
           $query->update([
             'nama_siswa'=> $request->nama_siswa,
             'no_tlp'=> $request->no_tlp,
+            'email'=> $request->email,
             'alamat'=> $request->alamat,
           ]);
           return Converter::ResponseApi(200, 'Success Edit Data Students', (object)array());
