@@ -2,13 +2,14 @@
 
 
 namespace App\Http\Controllers;
-use Illuminate\Http\Request;
-// use Illuminate\Support\Facades\Storage;
-use Illuminate\Support\Facades\Validator;
+
 use App\imageModel;
-use App\Http\Controllers\Controller;
 use App\Helpers\Converter;
+use Illuminate\Http\Request;
+use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Validator;
 use Symfony\Component\HttpFoundation\Response;
+// use Illuminate\Support\Facades\Storage;
 
 class ImageController extends Controller
 {
@@ -54,12 +55,6 @@ class ImageController extends Controller
      */
     public function create()
     {
-      $names = [0=> 'yusuf'];
-      $types = [0=> 'laki-laki'];
-      
-      $all = "$names $types";
-
-      return $all;
       
     }
 
@@ -80,9 +75,11 @@ class ImageController extends Controller
      * @param  \App\imageModel  $imageModel
      * @return \Illuminate\Http\Response
      */
-    public function show(imageModel $imageModel)
+    public function show()
     {
-        //
+      $image= imageModel::get();
+      // return $image;
+      return Converter::ResponseApi(200, 'Data Class', $image);
     }
 
     /**

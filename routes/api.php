@@ -23,12 +23,15 @@ use Illuminate\Support\Facades\Route;
 // });
 
     Route::post('/image','ImageController@index');
-    Route::get('/image/a','ImageController@create');
+    Route::get('/image/show','ImageController@show');
 
     Route::get('/class','ClassController@index');
     Route::post('/class/add','ClassController@add');
     Route::post('/class/edit', 'ClassController@edit');
     Route::get('/class/detail/{id}', 'ClassController@detail');
     Route::get('/class/delete', 'ClassController@delete');
+
+    Route::get('/login','loginController@index');
+    Route::post('/login/add','loginController@add');
 
 

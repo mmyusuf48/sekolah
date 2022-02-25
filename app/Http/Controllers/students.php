@@ -34,6 +34,7 @@ class students extends Controller
           $result[$index]->nama_siswa = $row->nama_siswa;
           $result[$index]->class_room = array('id' => $row->id_class, 'code_class' => $row->code_class);
           $result[$index]->image_url = url('/assets/images/students').'/'.$row->image;
+          $result[$index]->jenis_kelamin = ($row->jenis_kelamin == 'L') ? 'Laki Laki' : 'Perempuan';
           $result[$index]->no_tlp = $row->no_tlp;
           $result[$index]->email = $row->email;
           $result[$index]->alamat = $row->alamat;
@@ -52,6 +53,8 @@ class students extends Controller
       $validator = Validator::make($request->all(), [
         'nama_siswa' => 'required',
         'id_class' => 'required',
+        'id_image' => 'required',
+        'jenis_kelamin' => 'required',
         'no_tlp' => 'required|numeric',
         'email' => 'required|email',
         'alamat' => 'required'
@@ -70,9 +73,10 @@ class students extends Controller
         $query = studentsModel::create([
           'nama_siswa' => $request->nama_siswa,
           'id_class' => $request->id_class,
+          'id_image' => $request->id_image,
+          'jenis_kelamin' => $request->jenis_kelamin,
           'no_tlp' => $request->no_tlp,
           'email' => $request->email,
-          // 'image' => $image,
           'alamat' => $request->alamat
         ]);
         return Converter::ResponseApi(200, 'Success Add Data Students', (object)array());
@@ -123,14 +127,21 @@ class students extends Controller
         'no_tlp' => 'required|numeric',
         'alamat' => 'required',
       ]);
+
+      if ($validator->fails()) {
+        return Converter::ResponseApi(Response::HTTP_BAD_REQUEST, $validator->messages()->first(), (object)array());
+      }
       try {
         $query = studentsModel::where('id', $request->id);
         if ($query->first()) {
           $query->update([
-            'nama_siswa'=> $request->nama_siswa,
-            'no_tlp'=> $request->no_tlp,
-            'email'=> $request->email,
-            'alamat'=> $request->alamat,
+            'nama_siswa' => $request->nama_siswa,
+            'id_class' => $request->id_class,
+            'id_image' => $request->id_image,
+            'jenis_kelamin' => $request->jenis_kelamin,
+            'no_tlp' => $request->no_tlp,
+            'email' => $request->email,
+            'alamat' => $request->alamat
           ]);
           return Converter::ResponseApi(200, 'Success Edit Data Students', (object)array());
         } else {
